@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+// require http server
+const http = require('http');
+// require application
+const app = require('../index');
+
+// port to listen to
+const port = process.env.port || 3000;
+
+// Create server and listen on port
+const server = http.createServer(app)
+    .listen(port);
+
+// capture errors
+server.on('error', (err) => {
+    console.error(err);
+});
+
+
+server.on('listening', () => {
+    console.log('Server is listening on port ' + port);
+});
