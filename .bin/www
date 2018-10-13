@@ -8,6 +8,10 @@ const app = require('../index');
 // port to listen to
 const port = process.env.port || 3000;
 
+// production?
+const isProd = (
+    process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase()) === 'production';
+
 // Create server and listen on port
 const server = http.createServer(app)
     .listen(port);
@@ -19,5 +23,35 @@ server.on('error', (err) => {
 
 
 server.on('listening', () => {
-    console.log('Server is listening on port ' + port);
+    // Test database connection.
+    const { instance } = require('../database');
+    instance.authenticate()
+        .then(() => console.log('Database connection is ok...'))
+        .then(() => console.log('Server is listening on ' + port))
+        .then(() => maybeCreateTables(instance))
+        .catch((e) => console.error(e));
 });
+
+function maybeCreateTables(instance) {
+    if (!isProd) {
+
+        const fs = require('fs');
+        const path = require('path');
+        const { User } = require('../models/user');
+        
+        return User.sync({ force: true })
+            .then(() => {
+
+                const users = [].concat(
+                JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'users.json'))));
+
+                return instance.transaction((t) => {
+                    return User.bulkCreate(users);
+                });
+            });
+
+    }
+
+    // Just try to create table without wiping out
+    return Users.sync({ force: false });
+}
