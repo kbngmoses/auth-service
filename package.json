@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A simple authentication service built using node js",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kbngmoses/auth-service.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./.bin/www"
@@ -13,6 +17,7 @@
     "bcrypt": "^3.0.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "jsonwebtoken": "^8.3.0",
     "sequelize": "^4.39.0",
     "sqlite3": "^4.0.2"
   }

@@ -2,6 +2,9 @@
 
 // Dependencies
 const bcrypt = require('bcrypt');
+const jsonWebToken = require('jsonwebtoken');
+const fs = require('fs');
+const { defaultPrvKyPath } = require('../config/constants');
 
 /**
  * Produces hash of the password.
@@ -42,4 +45,24 @@ function isValidHash(password, hash) {
     });
 }
 
-module.exports = { hashPassword, isValidHash };
+/**
+ * Sign data and return a JWT token.
+ * 
+ * @param data {String} data to sign.
+ * @returns {Promise} A promise of the signed token.
+ */
+function jwtSignDataRSA(data) {
+    return new Promise((resolve) => {
+        const prvtKyPath = process.env.PRIVATE_KEY_FILE || defaultPrvKyPath();
+        if (!fs.existsSync(prvtKyPath)) {
+            reject(`Path ${prvtKyPath} does not exist.`);
+            return;
+        }
+        // Read key and sign user data.
+        const key = fs.readFileSync(prvtKyPath).toString('utf8');
+        const tkn = jsonWebToken.sign(data, key, { algorithm: 'RS256' });
+        resolve(tkn);
+    });
+}
+// h, i, j :)
+module.exports = { hashPassword, isValidHash, jwtSignDataRSA };
