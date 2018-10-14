@@ -46,9 +46,7 @@ function maybeCreateTables(instance) {
                 JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'users.json'))));
 
                 return instance.transaction((t) => {
-                    return Promise.all(users.map(
-                        user => User.create(user, { transaction: t })
-                    ));
+                    return User.bulkCreate(users);
                 });
             });
 

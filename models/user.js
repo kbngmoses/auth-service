@@ -69,5 +69,11 @@ User.beforeCreate((user, _) => {
     return hashPassword(user['password'])
         .then((hashed) => user['password'] = hashed);
 });
+User.beforeBulkCreate((users, _) => {
+    return Promise.all(users.map((user) =>
+        hashPassword(user['password'])
+            .then((hashed) => user['password'] = hashed)
+    ));
+});
 
 module.exports = { User, getByLoginInfo };
