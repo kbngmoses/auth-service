@@ -1,9 +1,6 @@
 // ts-check
 // User domain model
 
-const fs = require('fs');
-const path = require('path');
-
 const { instance, Sequelize } = require('../database');
 const { hashPassword, isValidHash } = require('../util/crypto');
 
@@ -30,6 +27,7 @@ async function getByLoginInfo(login, password) {
         ? Promise.resolve(null)
         : isValidHash(password, user.dataValues.password).then(
             (validity) => {
+                if (user) delete user['password']; // remove password
                 return validity
                     ? user.dataValues : null;
             });
